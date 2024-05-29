@@ -1,11 +1,17 @@
 @import url('https://fonts.googleapis.com/css2?family=Epilogue:ital,wght@0,100..900;1,100..900&display=swap');
 
+html, body {
+    overflow: auto;
+    scroll-behavior: smooth;
+    margin: 0;
+}
+
 footer {
     position: fixed;
     bottom: 0;
     width: 100%;
     height: 38px;
-    background-color: rgb(129, 54, 54);
+    background-color: rgb(255, 255, 255);
     text-align: center;
 }
 
