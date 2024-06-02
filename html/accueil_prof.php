@@ -12,7 +12,7 @@
     </header>
 
     <h1>BIENVENUE</h1>
-
+    <p>prout</p>
    <table align="center">
     <tr>
         <td>
