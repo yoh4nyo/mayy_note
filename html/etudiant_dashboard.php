@@ -7,6 +7,9 @@
     <link rel="stylesheet" href="../css/style_etudiant_dashboard.css">
 </head>
 <body>
+<header class="header">
+        <img src="../img/logo.png" alt="logo" width="120px">
+    </header>
     <div class="main">
         <div>
             <h1>Statistique | Nom Prénom TPE TD3</h1>

@@ -1,5 +1,15 @@
 @import url('https://fonts.googleapis.com/css2?family=Epilogue:ital,wght@0,100..900;1,100..900&display=swap');
 
+.header {
+    position: fixed;
+    top: 0;
+    right: 0;
+    display: flex;
+    justify-content: flex-end;
+    margin: 10px;
+}
+
+
 * {
     margin: 0;
     padding: 0;
