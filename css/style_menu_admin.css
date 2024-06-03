@@ -5,10 +5,6 @@
     --fa-border-padding: 18px;
 }
 
-<<<<<<< Updated upstream
-
-=======
->>>>>>> Stashed changes
 * {
     margin: 0;
     padding: 0;
@@ -19,11 +15,7 @@
 
 body,html {
     scroll-behavior: smooth;
-<<<<<<< Updated upstream
-    background-color:  #232034;
-=======
     background-color: #232034;
->>>>>>> Stashed changes
     font-family: "Epilogue", sans-serif;
 }
 
@@ -32,11 +24,7 @@ a {
 }
 
 a:hover {
-<<<<<<< Updated upstream
-    color: #6F86FF;
-=======
     color: #9e9d9d;
->>>>>>> Stashed changes
 }
 
 
@@ -55,11 +43,7 @@ a:hover {
 .off-screen-menu ul {
     font-size: 28px;
     font-weight: 400;
-<<<<<<< Updated upstream
-    margin-left: 18px;
-=======
     margin-left: 3px;
->>>>>>> Stashed changes
     margin-top: 108px;
 }
 
@@ -68,11 +52,7 @@ a:hover {
 }
 
 .disconnect {
-<<<<<<< Updated upstream
-    margin-top: 630px;
-=======
-    margin-top: 660px;
->>>>>>> Stashed changes
+    margin-top: 520px;
 }
 
 /* nav */
