@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="../css/style_bienvenue_prof.css">
+    <link rel="stylesheet" href="../css/style_accueil_prof.css">
     <title>Bienvenue professeur</title>
 </head>
 <body>
@@ -12,7 +12,6 @@
     </header>
 
     <h1>BIENVENUE</h1>
-
    <table align="center">
     <tr>
         <td>
