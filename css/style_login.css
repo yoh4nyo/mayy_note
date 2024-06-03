@@ -1,0 +1,87 @@
+@import url('https://fonts.googleapis.com/css2?family=Epilogue:ital,wght@0,100..900;1,100..900&display=swap');
+
+body {
+    background-color:#232034
+}
+
+img {
+    display: block;
+    width: 22%;
+    margin: 0 auto;
+    margin-top: 3%;
+}
+
+::placeholder {
+    font-family: "Epilogue", sans-serif;
+    color: #8B8A95;
+
+}
+
+h1 {
+    color: #ffffff;
+    font-family: "Epilogue", sans-serif;
+    text-align: center;
+    font-size: 55px;
+    margin-top: 5%;
+    margin-bottom: 0%;
+}
+
+input[type="submit"] {
+    background-color: #A7F2BA;
+    color: #000000;
+    border: none;
+    padding: 10px 20px;
+    font-size: 24px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    border-radius: 12px;
+    width: 400px;
+    font-family: "League Spartan", sans-serif;
+    font-weight: 770;
+    margin: 30px;
+
+}
+
+input[type="text"] {
+        background-color: #383546;
+        color: #ffffff;
+        border: none;
+        padding: 10px 20px;
+        font-size: 20px;
+        transition: background-color 0.3s ease;
+        border-radius: 8px;
+        width: 400px;
+        font-family: "Epilogue", sans-serif;
+        font-weight: 500;
+        margin: 10px;
+}
+
+input[type="password"] {
+    background-color: #383546;
+    color: #ffffff;
+    border: none;
+    padding: 10px 20px;
+    font-size: 20px;
+    transition: background-color 0.3s ease;
+    border-radius: 8px;
+    width: 400px;
+    font-family: "Epilogue", sans-serif;
+    font-weight: 500;
+    margin: 10px;
+}
+    
+form {
+    text-align: center;
+}
+
+#mdp:focus {
+    color: rgb(255, 255, 255);
+}
+
+#identifiant:focus {
+    color: rgb(255, 255, 255); 
+}
+
+table {
+    margin: 0 auto;
+}
