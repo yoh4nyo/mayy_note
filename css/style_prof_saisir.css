@@ -8,16 +8,6 @@ body {
     padding: 0;
 }
 
-.header {
-    position: fixed;
-    top: 0;
-    right: 0;
-    display: flex;
-    justify-content: flex-end;
-    margin: 15px;
-}
-
-
 form {
     max-width: 48%;
     margin-top: 8%;
