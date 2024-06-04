@@ -81,3 +81,7 @@ form {
 #identifiant:focus {
     color: rgb(255, 255, 255); 
 }
+
+table {
+    margin: 0 auto;
+}
