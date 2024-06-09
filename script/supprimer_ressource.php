@@ -8,24 +8,19 @@ if (!isset($_SESSION['Identifiant_admin']) || empty($_SESSION['Identifiant_admin
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $numeroRes = $_POST['numero_res'];
 
-    $serveur = "localhost";
-    $utilisateur = "root";
-    $motDePasse = "";
-    $baseDeDonnees = "mayynote";
-    $connexion = new mysqli($serveur, $utilisateur, $motDePasse, $baseDeDonnees);
+    include '../include/connexionBD.php';
 
-    if ($connexion->connect_error) {
-        die("La connexion a échoué : " . $connexion->connect_error);
-    }
+    $sql = "DELETE FROM ressources WHERE Numero_Res = :numeroRes";
 
-    $sql = "DELETE FROM ressources WHERE Numero_Res = '$numeroRes'";
+    $stmt = $connexion->prepare($sql);
+    $stmt->bindParam(':numeroRes', $numeroRes);
 
-    if ($connexion->query($sql) === TRUE) {
-        echo "La ressource a été supprimé avec succès.";
+    if ($stmt->execute()) {
+        echo "La ressource a été supprimée avec succès.";
     } else {
-        echo "Erreur : " . $sql . "<br>" . $connexion->error;
+        echo "Erreur : " . $sql . "<br>" . $stmt->errorInfo()[2];
     }
 
-    $connexion->close();
+    $connexion = null;
 }
 ?>

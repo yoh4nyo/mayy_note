@@ -1,5 +1,4 @@
 <?php
-
 session_start();
 if (!isset($_SESSION['Identifiant_admin']) || empty($_SESSION['Identifiant_admin'])) {
     header("Location: login.php");
@@ -13,29 +12,30 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $mdp = $_POST['Mdp_Ens'];
     $role = $_POST['role'];
 
-    $serveur = "localhost";
-    $utilisateur = "root";
-    $motDePasse = ""; 
-    $baseDeDonnees = "mayynote";
-    $connexion = new mysqli($serveur, $utilisateur, $motDePasse, $baseDeDonnees);
-
-    if ($connexion->connect_error) {
-        die("La connexion a échoué : " . $connexion->connect_error);
-    }
+    include '../include/connexionBD.php'; // Inclure le fichier de connexion à la base de données
 
     $sql = "INSERT INTO enseignants (Numero_Ens, Prenom_Ens, Nom_Ens, Identifiant_Ens, Mdp_Ens, role) 
-    VALUES ('$numero', '$prenom', '$nom', '$identifiant', '$mdp', '$role')";
+    VALUES (:numero, :prenom, :nom, :identifiant, :mdp, :role)";
 
-    if ($connexion->query($sql) === TRUE) {
+    $stmt = $connexion->prepare($sql);
+    $stmt->bindParam(':numero', $numero);
+    $stmt->bindParam(':prenom', $prenom);
+    $stmt->bindParam(':nom', $nom);
+    $stmt->bindParam(':identifiant', $identifiant);
+    $stmt->bindParam(':mdp', $mdp);
+    $stmt->bindParam(':role', $role);
+
+    if ($stmt->execute()) {
         header("Location: ".$_SERVER['PHP_SELF']);
         exit();
     } else {
-        echo "Erreur : " . $sql . "<br>" . $connexion->error;
+        echo "Erreur : " . $sql . "<br>" . $connexion->errorInfo()[2];
     }
 
-    $connexion->close();
+    $connexion = null;
 }
 ?>
+
 
 <!DOCTYPE html>
 <html lang="fr">
@@ -73,7 +73,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <input type="text" name="Prenom_Ens" required><br>
 
         <label for="Nom_Ens">Nom : </label>
-        <input type="text" required><br>
+        <input type="text" name="Nom_Ens" required><br> <!-- Ajout de name="Nom_Ens" -->
 
         <label for="Identifiant_Ens">Identifiant : </label>
         <input type="text" name="Identifiant_Ens" required><br>
@@ -82,7 +82,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <input type="text" name="Mdp_Ens" required><br>
 
         <label for="Role">Role :</label>
-        <select>
+        <select name="role"> <!-- Ajout de name="role" -->
             <option disabled selected>...</option>
             <option>Enseignant</option>
             <option>Administrateur</option>
@@ -96,20 +96,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <br>
 <h2>Liste des professeurs</h2>
 <?php
-$serveur = "localhost";
-$utilisateur = "root";
-$motDePasse = ""; 
-$baseDeDonnees = "mayynote";
-
-$connexion = new mysqli($serveur, $utilisateur, $motDePasse, $baseDeDonnees);
-
-if ($connexion->connect_error) {
-    die("La connexion a échoué : " . $connexion->connect_error);
-}
+include '../include/connexionBD.php'; // Inclure le fichier de connexion à la base de données
 
 $resultat = $connexion->query("SELECT * FROM enseignants");
 
-if ($resultat->num_rows > 0) {
+if ($resultat->rowCount() > 0) {
     echo "<table border='1'>
                 <tr>
                     <th>Numero_Ens</th>
@@ -120,7 +111,7 @@ if ($resultat->num_rows > 0) {
                     <th>Role</th>
                 </tr>";
 
-    while ($row = $resultat->fetch_assoc()) {
+    foreach ($resultat as $row) {
         echo "<tr>
                     <td>" . $row["Numero_Ens"] . "</td>
                     <td>" . $row["Prenom_Ens"] . "</td>
@@ -134,8 +125,6 @@ if ($resultat->num_rows > 0) {
 } else {
     echo "<script>alert('Aucun professeur trouvé');</script>";
 }
-
-$connexion->close();
 ?>
 
 <button id="ajouter-button" onclick="EffacerEns()">Effacer un enseignant</button>
@@ -164,8 +153,6 @@ $connexion->close();
         }
     }
 }
-
-
 </script>
 
 <?php include '../include/footer.php'?>

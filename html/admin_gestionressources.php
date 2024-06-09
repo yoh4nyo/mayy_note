@@ -5,33 +5,32 @@ if (!isset($_SESSION['Identifiant_admin']) || empty($_SESSION['Identifiant_admin
     header("Location: login.php");
     exit();
 } 
+
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $numero = $_POST['Numero_Res'];
     $nom = $_POST['Nom_Res'];
     $coefficient = $_POST['Coefficient_Res'];
     $num_ue = $_POST['Numero_UE'];
 
-    $serveur = "localhost";
-    $utilisateur = "root";
-    $motDePasse = ""; 
-    $baseDeDonnees = "mayynote";
-    $connexion = new mysqli($serveur, $utilisateur, $motDePasse, $baseDeDonnees);
-
-    if ($connexion->connect_error) {
-        die("La connexion a échoué : " . $connexion->connect_error);
-    }
+    include '../include/connexionBD.php'; // Inclure le fichier de connexion à la base de données
 
     $sql = "INSERT INTO ressources (Numero_Res, Nom_Res, Coefficient_Res, Numero_UE) 
-    VALUES ('$numero', '$nom', '$coefficient', '$num_ue')";
+    VALUES (:numero, :nom, :coefficient, :num_ue)";
 
-    if ($connexion->query($sql) === TRUE) {
+    $stmt = $connexion->prepare($sql);
+    $stmt->bindParam(':numero', $numero);
+    $stmt->bindParam(':nom', $nom);
+    $stmt->bindParam(':coefficient', $coefficient);
+    $stmt->bindParam(':num_ue', $num_ue);
+
+    if ($stmt->execute()) {
         header("Location: ".$_SERVER['PHP_SELF']);
         exit();
     } else {
-        echo "Erreur : " . $sql . "<br>" . $connexion->error;
+        echo "Erreur : " . $sql . "<br>" . $stmt->errorInfo()[2];
     }
 
-    $connexion->close();
+    $connexion = null;
 }
 ?>
 
@@ -68,7 +67,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <input type="number" name="Numero_Res" required min="0" max="1000"><br>
 
         <label for="Nom_Res">Nom de la ressource : </label>
-        <input type="text" name="Nom_UE" required><br>
+        <input type="text" name="Nom_Res" required><br>
 
         <label for="Coefficient_Res">Coefficient de la ressource : </label>
         <input type="number" name="Coefficient_Res" min="0" max="99" required><br>
@@ -85,20 +84,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <br>
 <h2>Liste des ressources</h2>
 <?php
-$serveur = "localhost";
-$utilisateur = "root";
-$motDePasse = ""; 
-$baseDeDonnees = "mayynote";
-
-$connexion = new mysqli($serveur, $utilisateur, $motDePasse, $baseDeDonnees);
-
-if ($connexion->connect_error) {
-    die("La connexion a échoué : " . $connexion->connect_error);
-}
+include '../include/connexionBD.php';
 
 $resultat = $connexion->query("SELECT * FROM ressources");
 
-if ($resultat->num_rows > 0) {
+if ($resultat->rowCount() > 0) {
     echo "<table border='1'>
                 <tr>
                     <th>Numero_Res</th>
@@ -107,7 +97,7 @@ if ($resultat->num_rows > 0) {
                     <th>Numero_UE</th>
                 </tr>";
 
-    while ($row = $resultat->fetch_assoc()) {
+    foreach ($resultat as $row) {
         echo "<tr>
                     <td>" . $row["Numero_Res"] . "</td>
                     <td>" . $row["Nom_Res"] . "</td>
@@ -120,7 +110,7 @@ if ($resultat->num_rows > 0) {
     echo "<script>alert('Aucune Ressource trouvée');</script>";
 }
 
-$connexion->close();
+$connexion = null;
 ?>
 
 <button id="ajouter-button" onclick="EffacerRes()">Effacer une ressource</button>

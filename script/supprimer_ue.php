@@ -8,24 +8,19 @@ if (!isset($_SESSION['Identifiant_admin']) || empty($_SESSION['Identifiant_admin
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $numeroUE = $_POST['numero_ue'];
 
-    $serveur = "localhost";
-    $utilisateur = "root";
-    $motDePasse = "";
-    $baseDeDonnees = "mayynote";
-    $connexion = new mysqli($serveur, $utilisateur, $motDePasse, $baseDeDonnees);
+    include '../include/connexionBD.php'; 
 
-    if ($connexion->connect_error) {
-        die("La connexion a échoué : " . $connexion->connect_error);
-    }
+    $sql = "DELETE FROM ue WHERE Numero_UE = :numeroUE";
 
-    $sql = "DELETE FROM ue WHERE Numero_UE = '$numeroUE'";
+    $stmt = $connexion->prepare($sql);
+    $stmt->bindParam(':numeroUE', $numeroUE);
 
-    if ($connexion->query($sql) === TRUE) {
-        echo "L'UE a été supprimé avec succès.";
+    if ($stmt->execute()) {
+        echo "L'UE a été supprimée avec succès.";
     } else {
-        echo "Erreur : " . $sql . "<br>" . $connexion->error;
+        echo "Erreur : " . $sql . "<br>" . $stmt->errorInfo()[2];
     }
 
-    $connexion->close();
+    $connexion = null;
 }
 ?>

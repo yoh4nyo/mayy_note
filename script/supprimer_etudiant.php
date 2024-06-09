@@ -8,24 +8,19 @@ if (!isset($_SESSION['Identifiant_admin']) || empty($_SESSION['Identifiant_admin
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $numeroEtu = $_POST['numero_etu'];
 
-    $serveur = "localhost";
-    $utilisateur = "root";
-    $motDePasse = "";
-    $baseDeDonnees = "mayynote";
-    $connexion = new mysqli($serveur, $utilisateur, $motDePasse, $baseDeDonnees);
+    include '../include/connexionBD.php';
 
-    if ($connexion->connect_error) {
-        die("La connexion a échoué : " . $connexion->connect_error);
-    }
+    $sql = "DELETE FROM etudiants WHERE Numero_Etu = :numeroEtu";
 
-    $sql = "DELETE FROM etudiants WHERE Numero_Etu = '$numeroEtu'";
+    $stmt = $connexion->prepare($sql);
+    $stmt->bindParam(':numeroEtu', $numeroEtu);
 
-    if ($connexion->query($sql) === TRUE) {
+    if ($stmt->execute()) {
         echo "L'étudiant a été supprimé avec succès.";
     } else {
-        echo "Erreur : " . $sql . "<br>" . $connexion->error;
+        echo "Erreur : " . $sql . "<br>" . $stmt->errorInfo()[2];
     }
 
-    $connexion->close();
+    $connexion = null;
 }
 ?>

@@ -1,5 +1,4 @@
 <?php
-
 session_start();
 if (!isset($_SESSION['Identifiant_admin']) || empty($_SESSION['Identifiant_admin'])) {
     header("Location: login.php");
@@ -15,27 +14,29 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $annee = $_POST['Annee'];
     $groupe = $_POST['Numero_Grp'];
 
-    $serveur = "localhost";
-    $utilisateur = "root";
-    $motDePasse = ""; 
-    $baseDeDonnees = "mayynote";
-    $connexion = new mysqli($serveur, $utilisateur, $motDePasse, $baseDeDonnees);
-
-    if ($connexion->connect_error) {
-        die("La connexion a échoué : " . $connexion->connect_error);
-    }
+    include '../include/connexionBD.php'; // Inclure le fichier de connexion à la base de données
 
     $sql = "INSERT INTO etudiants (Numero_Etu, Prénom_Etu, Nom_Etu, Identifiant_Etu, Mdp_Etu, Cursus, Annee, Numero_Grp) 
-    VALUES ('$numero', '$prenom', '$nom', '$identifiant', '$mdp', '$cursus', '$annee', '$groupe')";
+    VALUES (:numero, :prenom, :nom, :identifiant, :mdp, :cursus, :annee, :groupe)";
 
-    if ($connexion->query($sql) === TRUE) {
+    $stmt = $connexion->prepare($sql);
+    $stmt->bindParam(':numero', $numero);
+    $stmt->bindParam(':prenom', $prenom);
+    $stmt->bindParam(':nom', $nom);
+    $stmt->bindParam(':identifiant', $identifiant);
+    $stmt->bindParam(':mdp', $mdp);
+    $stmt->bindParam(':cursus', $cursus);
+    $stmt->bindParam(':annee', $annee);
+    $stmt->bindParam(':groupe', $groupe);
+
+    if ($stmt->execute()) {
         header("Location: ".$_SERVER['PHP_SELF']);
         exit();
     } else {
-        echo "Erreur : " . $sql . "<br>" . $connexion->error;
+        echo "Erreur : " . $sql . "<br>" . $stmt->errorInfo()[2];
     }
 
-    $connexion->close();
+    $connexion = null;
 }
 ?>
 
@@ -100,20 +101,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <br>
 <h2>Liste des étudiants</h2>
 <?php
-$serveur = "localhost";
-$utilisateur = "root";
-$motDePasse = ""; 
-$baseDeDonnees = "mayynote";
-
-$connexion = new mysqli($serveur, $utilisateur, $motDePasse, $baseDeDonnees);
-
-if ($connexion->connect_error) {
-    die("La connexion a échoué : " . $connexion->connect_error);
-}
+include '../include/connexionBD.php';
 
 $resultat = $connexion->query("SELECT * FROM etudiants");
 
-if ($resultat->num_rows > 0) {
+if ($resultat->rowCount() > 0) {
     echo "<table border='1'>
                 <tr>
                     <th>Numero_Etu</th>
@@ -126,10 +118,10 @@ if ($resultat->num_rows > 0) {
                     <th>Numero_Grp</th>
                 </tr>";
 
-    while ($row = $resultat->fetch_assoc()) {
+    foreach ($resultat as $row) {
         echo "<tr>
                     <td>" . $row["Numero_Etu"] . "</td>
-                    <td>" . $row["Prénom_Etu"] . "</td>
+                    <td>" . $row["Prenom_Etu"] . "</td>
                     <td>" . $row["Nom_Etu"] . "</td>
                     <td>" . $row["Identifiant_Etu"] . "</td>
                     <td>" . $row["Mdp_Etu"] . "</td>
@@ -143,7 +135,7 @@ if ($resultat->num_rows > 0) {
     echo "<script>alert('Aucun étudiant trouvé');</script>";
 }
 
-$connexion->close();
+$connexion = null;
 ?>
 
 <button id="ajouter-button" onclick="EffacerEtu()">Effacer un étudiant</button>
@@ -172,8 +164,6 @@ $connexion->close();
         }
     }
 }
-
-
 </script>
 
 <?php include '../include/footer.php'?>
