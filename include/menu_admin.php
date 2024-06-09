@@ -11,11 +11,11 @@
 
     <div class="off-screen-menu">
       <ul>
-        <li><i class="fa-solid fa-user fa-border fa-lg"></i><a href="../html/admin_gestionetudiants.php">Étudiant</a></li> <br>
-        <li><i class="fa-solid fa-user fa-border fa-lg"></i><a href="../html/admin_gestionenseignant.php">Enseignants</a></li> <br>
-        <li><i class="fa-solid fa-list fa-border fa-lg"></i><a href="../html/admin_gestionue.php">UE</a></li> <br>
-        <li><i class="fa-solid fa-list fa-border fa-lg"></i><a href="../html/admin_gestionressources.php">Ressources</a></li> <br>
-        <li class="disconnect"><i class="fa-solid fa-power-off fa-border fa-lg"></i><a href="../include/logout.php">Déconnexion</a></li>
+        <li><span style="color:black;"><i class="fa-solid fa-user fa-border fa-lg"></i><a href="../html/admin_gestionetudiants.php">Étudiant</a></span></li> <br>
+        <li><span style="color:black;"><i class="fa-solid fa-user fa-border fa-lg"></i><a href="../html/admin_gestionenseignant.php">Enseignants</a></span></li> <br>
+        <li><span style="color:black;"><i class="fa-solid fa-list fa-border fa-lg"></i><a href="../html/admin_gestionue.php">UE</a></span></li> <br>
+        <li><span style="color:black;"><i class="fa-solid fa-list fa-border fa-lg"></i><a href="../html/admin_gestionressources.php">Ressources</a></span></li> <br>
+        <li class="disconnect"><span style="color:black;"><i class="fa-solid fa-power-off fa-border fa-lg"></i><a href="../include/logout.php">Déconnexion</a></span></li>
       </ul>
     </div>
 
