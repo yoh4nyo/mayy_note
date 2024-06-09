@@ -99,7 +99,10 @@ if ($resultat->rowCount() > 0) {
                     <td>" . $row["Nom_UE"] . "</td>
                     <td>" . $row["Coefficient_UE"] . "</td>
                     <td>
-                        <a href='../script/supprimer_ue.php?id=" . $row["Numero_UE"] . "' class='delete-button' onclick=\"return confirm('Êtes-vous sûr de vouloir supprimer cette UE?');\"><i class='fas fa-trash fa-border fa-lg'></i>Effacer</a>      
+                        <div class='button-container'>
+                            <a href='../script/modifier_ue.php?id=" . $row["Numero_UE"] . "' class='edit-button'><i class='fas fa-edit'></i> Modifier</a> <br>
+                            <a href='../script/supprimer_ue.php?id=" . $row["Numero_UE"] . "' class='delete-button' onclick=\"return confirm('Êtes-vous sûr de vouloir supprimer cette ue?');\"><i class='fas fa-trash fa-border fa-lg'></i>Effacer</a>
+                        </div>
                     </td>
                 </tr>";
     }

@@ -106,7 +106,10 @@ if ($resultat->rowCount() > 0) {
                     <td>" . $row["Coefficient_Res"] . "</td>
                     <td>" . $row["Numero_UE"] . "</td>
                     <td>
-                        <a href='../script/supprimer_ressource.php?id=" . $row["Numero_Res"] . "' class='delete-button' onclick=\"return confirm('Êtes-vous sûr de vouloir supprimer cette ressource?');\"><i class='fas fa-trash fa-border fa-lg'></i>Effacer</a>
+                        <div class='button-container'>
+                            <a href='../script/modifier_ressource.php?id=" . $row["Numero_Res"] . "' class='edit-button'><i class='fas fa-edit'></i> Modifier</a> <br>
+                            <a href='../script/supprimer_ressource.php?id=" . $row["Numero_Res"] . "' class='delete-button' onclick=\"return confirm('Êtes-vous sûr de vouloir supprimer cette ressource?');\"><i class='fas fa-trash fa-border fa-lg'></i>Effacer</a>
+                        </div>
                     </td>
                 </tr>";
     }

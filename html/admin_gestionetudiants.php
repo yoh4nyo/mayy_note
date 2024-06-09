@@ -17,7 +17,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     include '../include/connexionBD.php'; // Inclure le fichier de connexion à la base de données
 
-    $sql = "INSERT INTO etudiants (Numero_Etu, Prénom_Etu, Nom_Etu, Identifiant_Etu, Mdp_Etu, Cursus, Annee, Numero_Grp) 
+    $sql = "INSERT INTO etudiants (Numero_Etu, Prenom_Etu, Nom_Etu, Identifiant_Etu, Mdp_Etu, Cursus, Annee, Numero_Grp) 
     VALUES (:numero, :prenom, :nom, :identifiant, :mdp, :cursus, :annee, :groupe)";
 
     $stmt = $connexion->prepare($sql);
@@ -131,7 +131,10 @@ if ($resultat->rowCount() > 0) {
                     <td>" . $row["Annee"] . "</td>
                     <td>" . $row["Numero_Grp"] . "</td>
                     <td>
-                        <a href='../script/supprimer_etudiant.php?id=" . $row["Numero_Etu"] . "' class='delete-button onclick=\"return confirm('Êtes-vous sûr de vouloir supprimer cet étudiant?');\"><i class='fas fa-trash fa-border fa-lg'></i>Effacer</a>
+                        <div class='button-container'>
+                            <a href='../script/modifier_etudiant.php?id=" . $row["Numero_Etu"] . "' class='edit-button'><i class='fas fa-edit'></i> Modifier</a> <br>
+                            <a href='../script/supprimer_etudiant.php?id=" . $row["Numero_Etu"] . "' class='delete-button' onclick=\"return confirm('Êtes-vous sûr de vouloir supprimer cet étudiant?');\"><i class='fas fa-trash fa-border fa-lg'></i>Effacer</a>
+                        </div>
                     </td>
                 </tr>";
     }

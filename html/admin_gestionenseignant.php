@@ -12,7 +12,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $mdp = $_POST['Mdp_Ens'];
     $role = $_POST['role'];
 
-    include '../include/connexionBD.php'; // Inclure le fichier de connexion à la base de données
+    include '../include/connexionBD.php';
 
     $sql = "INSERT INTO enseignants (Numero_Ens, Prenom_Ens, Nom_Ens, Identifiant_Ens, Mdp_Ens, role) 
     VALUES (:numero, :prenom, :nom, :identifiant, :mdp, :role)";
@@ -74,7 +74,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <input type="text" name="Prenom_Ens" required><br>
 
         <label for="Nom_Ens">Nom : </label>
-        <input type="text" name="Nom_Ens" required><br> <!-- Ajout de name="Nom_Ens" -->
+        <input type="text" name="Nom_Ens" required><br>
 
         <label for="Identifiant_Ens">Identifiant : </label>
         <input type="text" name="Identifiant_Ens" required><br>
@@ -83,10 +83,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <input type="text" name="Mdp_Ens" required><br>
 
         <label for="Role">Role :</label>
-        <select name="role"> <!-- Ajout de name="role" -->
+        <select name="role">
             <option disabled selected>...</option>
-            <option>Enseignant</option>
-            <option>Administrateur</option>
+            <option>enseignant</option>
+            <option>administrateur</option>
         </select> <br>
 
         <input class="button" type="submit" value="Ajouter">
@@ -97,7 +97,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <br>
 <h2>Liste des professeurs</h2>
 <?php
-include '../include/connexionBD.php'; // Inclure le fichier de connexion à la base de données
+include '../include/connexionBD.php';
 
 $resultat = $connexion->query("SELECT * FROM enseignants");
 
@@ -122,7 +122,10 @@ if ($resultat->rowCount() > 0) {
                     <td>" . $row["Mdp_Ens"] . "</td>
                     <td>" . $row["role"] . "</td>
                     <td>
-                        <a href='../script/supprimer_enseignant.php?id=" . $row["Numero_Ens"] . "' class='delete-button' onclick=\"return confirm('Êtes-vous sûr de vouloir supprimer cet enseignant?');\"><i class='fas fa-trash fa-border fa-lg'></i>Effacer</a>
+                        <div class='button-container'>
+                            <a href='../script/modifier_enseignant.php?id=" . $row["Numero_Ens"] . "' class='edit-button'><i class='fas fa-edit'></i> Modifier</a> <br>
+                            <a href='../script/supprimer_enseignant.php?id=" . $row["Numero_Ens"] . "' class='delete-button' onclick=\"return confirm('Êtes-vous sûr de vouloir supprimer cet enseignant?');\"><i class='fas fa-trash fa-border fa-lg'></i>Effacer</a>
+                        </div>
                     </td>
                 </tr>";
     }
@@ -137,25 +140,6 @@ if ($resultat->rowCount() > 0) {
     function AjouterEtu() {
         var formContainer = document.querySelector('.form-container');
         formContainer.style.display = (formContainer.style.display === 'none' || formContainer.style.display === '') ? 'block' : 'none';
-    }
-
-    function EffacerEns() {
-    var numeroEns = prompt("Entrez le numéro de l'enseignant à supprimer :");
-    if (numeroEns !== null && numeroEns !== "") {
-        if (confirm("Êtes-vous sûr de vouloir supprimer l'enseignant avec le numéro " + numeroEns + " ?")) {
-            // Envoyer une requête AJAX pour supprimer l'étudiant
-            var xhr = new XMLHttpRequest();
-            xhr.open("POST", "../script/supprimer_enseignant.php", true);
-            xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-            xhr.onreadystatechange = function() {
-                if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
-                    // Actualiser la page après la suppression
-                    location.reload();
-                }
-            };
-            xhr.send("numero_ens=" + numeroEns);
-        }
-    }
 }
 </script>
 
