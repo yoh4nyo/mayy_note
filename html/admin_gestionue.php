@@ -37,6 +37,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer"/>
     <link rel="stylesheet" href="../css/style_admin_gestion.css">
     <title>Gestion des UE</title>
     <style>
@@ -89,6 +90,7 @@ if ($resultat->rowCount() > 0) {
                     <th>Numero_UE</th>
                     <th>Nom_UE</th>
                     <th>Coefficient_UE</th>
+                    <th>Action</th>
                 </tr>";
 
     foreach ($resultat as $row) {
@@ -96,6 +98,9 @@ if ($resultat->rowCount() > 0) {
                     <td>" . $row["Numero_UE"] . "</td>
                     <td>" . $row["Nom_UE"] . "</td>
                     <td>" . $row["Coefficient_UE"] . "</td>
+                    <td>
+                        <a href='../script/supprimer_ue.php?id=" . $row["Numero_UE"] . "' class='delete-button' onclick=\"return confirm('Êtes-vous sûr de vouloir supprimer cette UE?');\"><i class='fas fa-trash fa-border fa-lg'></i>Effacer</a>      
+                    </td>
                 </tr>";
     }
     echo "</table>";
@@ -106,31 +111,10 @@ if ($resultat->rowCount() > 0) {
 $connexion = null;
 ?>
 
-<button id="ajouter-button" onclick="EffacerUE()">Effacer une UE</button>
-
 <script>
     function AjouterEtu() {
         var formContainer = document.querySelector('.form-container');
         formContainer.style.display = (formContainer.style.display === 'none' || formContainer.style.display === '') ? 'block' : 'none';
-    }
-
-    function EffacerUE() {
-    var numeroUE = prompt("Entrez le numéro de l'UE à supprimer :");
-    if (numeroUE !== null && numeroUE !== "") {
-        if (confirm("Êtes-vous sûr de vouloir supprimer l'UE avec le numéro " + numeroUE + " ?")) {
-            // Envoyer une requête AJAX pour supprimer l'étudiant
-            var xhr = new XMLHttpRequest();
-            xhr.open("POST", "../script/supprimer_ue.php", true);
-            xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-            xhr.onreadystatechange = function() {
-                if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
-                    // Actualiser la page après la suppression
-                    location.reload();
-                }
-            };
-            xhr.send("numero_ue=" + numeroUE);
-        }
-    }
 }
 
 

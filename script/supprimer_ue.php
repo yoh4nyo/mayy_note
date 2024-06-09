@@ -1,26 +1,15 @@
 <?php
-session_start();
-if (!isset($_SESSION['Identifiant_admin']) || empty($_SESSION['Identifiant_admin'])) {
-    header("Location: login.php");
-    exit();
-}
+include '../include/connexionBD.php';
 
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $numeroUE = $_POST['numero_ue'];
+if (isset($_GET['id'])) {
+    $id = intval($_GET['id']);
 
-    include '../include/connexionBD.php'; 
+        // Supprimer l'ue
+        $stmt = $connexion->prepare('DELETE FROM ue WHERE Numero_UE = ?');
+        $stmt->execute([$id]);
 
-    $sql = "DELETE FROM ue WHERE Numero_UE = :numeroUE";
-
-    $stmt = $connexion->prepare($sql);
-    $stmt->bindParam(':numeroUE', $numeroUE);
-
-    if ($stmt->execute()) {
-        echo "L'UE a été supprimée avec succès.";
-    } else {
-        echo "Erreur : " . $sql . "<br>" . $stmt->errorInfo()[2];
-    }
-
-    $connexion = null;
+        header('Location: ../html/admin_gestionue.php');
+} else {
+    echo "ID de l'UE non spécifié.";
 }
 ?>

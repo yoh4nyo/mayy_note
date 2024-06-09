@@ -43,6 +43,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="../css/style_admin_gestion.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer"/>
     <title>Gestion Professeur</title>
     <style>
 .form-container {
@@ -109,6 +110,7 @@ if ($resultat->rowCount() > 0) {
                     <th>Identifiant_Ens</th>
                     <th>Mdp_Ens</th>
                     <th>Role</th>
+                    <th>Action</th>
                 </tr>";
 
     foreach ($resultat as $row) {
@@ -119,6 +121,9 @@ if ($resultat->rowCount() > 0) {
                     <td>" . $row["Identifiant_Ens"] . "</td>
                     <td>" . $row["Mdp_Ens"] . "</td>
                     <td>" . $row["role"] . "</td>
+                    <td>
+                        <a href='../script/supprimer_enseignant.php?id=" . $row["Numero_Ens"] . "' class='delete-button' onclick=\"return confirm('Êtes-vous sûr de vouloir supprimer cet enseignant?');\"><i class='fas fa-trash fa-border fa-lg'></i>Effacer</a>
+                    </td>
                 </tr>";
     }
     echo "</table>";
@@ -127,7 +132,6 @@ if ($resultat->rowCount() > 0) {
 }
 ?>
 
-<button id="ajouter-button" onclick="EffacerEns()">Effacer un enseignant</button>
 
 <script>
     function AjouterEtu() {

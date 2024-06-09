@@ -1,26 +1,24 @@
 <?php
-session_start();
-if (!isset($_SESSION['Identifiant_admin']) || empty($_SESSION['Identifiant_admin'])) {
-    header("Location: login.php");
-    exit();
-}
+include '../include/connexionBD.php';
 
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $numeroEtu = $_POST['numero_etu'];
+if (isset($_GET['id'])) {
+    $id = intval($_GET['id']);
+    try {
+        // Supprimer les entrées correspondantes dans notation
+        $stmt = $connexion->prepare('DELETE FROM notation WHERE Numero_Etu = ?');
+        $stmt->execute([$id]);
 
-    include '../include/connexionBD.php';
+        // Supprimer l'étudiant
+        $stmt = $connexion->prepare('DELETE FROM etudiants WHERE Numero_Etu = ?');
+        $stmt->execute([$id]);
 
-    $sql = "DELETE FROM etudiants WHERE Numero_Etu = :numeroEtu";
-
-    $stmt = $connexion->prepare($sql);
-    $stmt->bindParam(':numeroEtu', $numeroEtu);
-
-    if ($stmt->execute()) {
-        echo "L'étudiant a été supprimé avec succès.";
-    } else {
-        echo "Erreur : " . $sql . "<br>" . $stmt->errorInfo()[2];
+        header('Location: ../html/admin_gestionetudiants.php');
+        exit();
+    } catch (Exception $e) {
+        echo 'Erreur lors de la suppression : ' . $e->getMessage();
     }
-
-    $connexion = null;
+} else {
+    echo "ID de l'étudiant non spécifié.";
 }
+$connexion = null;
 ?>

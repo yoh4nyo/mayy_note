@@ -4,6 +4,7 @@ if (!isset($_SESSION['Identifiant_admin']) || empty($_SESSION['Identifiant_admin
     header("Location: login.php");
     exit();
 } 
+
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $numero = $_POST['Numero_Etu'];
     $prenom = $_POST['Prenom_Etu'];
@@ -46,16 +47,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="../css/style_admin_gestion.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer"/>
     <title>Gestion Étudiant</title>
     <style>
-.form-container {
-    display: <?php echo ($_SERVER["REQUEST_METHOD"] != "POST") ? 'none' : 'block'; ?>;
-    width: 50%;
-    margin: 20px auto; 
-    padding: 20px;
-    border-radius: 8px;
-    text-align: center; 
-}
+        .form-container {
+            display: <?php echo ($_SERVER["REQUEST_METHOD"] != "POST") ? 'none' : 'block'; ?>;
+            width: 50%;
+            margin: 20px auto; 
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center; 
+        }
     </style>
 </head>
 <body>
@@ -97,7 +99,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     </form>
 </div>
 
-
 <br>
 <h2>Liste des étudiants</h2>
 <?php
@@ -116,6 +117,7 @@ if ($resultat->rowCount() > 0) {
                     <th>Cursus</th>
                     <th>Annee</th>
                     <th>Numero_Grp</th>
+                    <th>Action</th>
                 </tr>";
 
     foreach ($resultat as $row) {
@@ -128,6 +130,9 @@ if ($resultat->rowCount() > 0) {
                     <td>" . $row["Cursus"] . "</td>
                     <td>" . $row["Annee"] . "</td>
                     <td>" . $row["Numero_Grp"] . "</td>
+                    <td>
+                        <a href='../script/supprimer_etudiant.php?id=" . $row["Numero_Etu"] . "' class='delete-button onclick=\"return confirm('Êtes-vous sûr de vouloir supprimer cet étudiant?');\"><i class='fas fa-trash fa-border fa-lg'></i>Effacer</a>
+                    </td>
                 </tr>";
     }
     echo "</table>";
@@ -138,31 +143,10 @@ if ($resultat->rowCount() > 0) {
 $connexion = null;
 ?>
 
-<button id="ajouter-button" onclick="EffacerEtu()">Effacer un étudiant</button>
-
 <script>
     function AjouterEtu() {
         var formContainer = document.querySelector('.form-container');
         formContainer.style.display = (formContainer.style.display === 'none' || formContainer.style.display === '') ? 'block' : 'none';
-    }
-
-    function EffacerEtu() {
-    var numeroEtu = prompt("Entrez le numéro de l'étudiant à supprimer :");
-    if (numeroEtu !== null && numeroEtu !== "") {
-        if (confirm("Êtes-vous sûr de vouloir supprimer l'étudiant avec le numéro " + numeroEtu + " ?")) {
-            // Envoyer une requête AJAX pour supprimer l'étudiant
-            var xhr = new XMLHttpRequest();
-            xhr.open("POST", "../script/supprimer_etudiant.php", true);
-            xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-            xhr.onreadystatechange = function() {
-                if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
-                    // Actualiser la page après la suppression
-                    location.reload();
-                }
-            };
-            xhr.send("numero_etu=" + numeroEtu);
-        }
-    }
 }
 </script>
 
