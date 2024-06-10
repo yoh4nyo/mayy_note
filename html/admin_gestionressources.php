@@ -5,33 +5,32 @@ if (!isset($_SESSION['Identifiant_admin']) || empty($_SESSION['Identifiant_admin
     header("Location: login.php");
     exit();
 } 
+
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $numero = $_POST['Numero_Res'];
     $nom = $_POST['Nom_Res'];
     $coefficient = $_POST['Coefficient_Res'];
     $num_ue = $_POST['Numero_UE'];
 
-    $serveur = "localhost";
-    $utilisateur = "root";
-    $motDePasse = ""; 
-    $baseDeDonnees = "mayynote";
-    $connexion = new mysqli($serveur, $utilisateur, $motDePasse, $baseDeDonnees);
-
-    if ($connexion->connect_error) {
-        die("La connexion a échoué : " . $connexion->connect_error);
-    }
+    include '../include/connexionBD.php'; // Inclure le fichier de connexion à la base de données
 
     $sql = "INSERT INTO ressources (Numero_Res, Nom_Res, Coefficient_Res, Numero_UE) 
-    VALUES ('$numero', '$nom', '$coefficient', '$num_ue')";
+    VALUES (:numero, :nom, :coefficient, :num_ue)";
 
-    if ($connexion->query($sql) === TRUE) {
+    $stmt = $connexion->prepare($sql);
+    $stmt->bindParam(':numero', $numero);
+    $stmt->bindParam(':nom', $nom);
+    $stmt->bindParam(':coefficient', $coefficient);
+    $stmt->bindParam(':num_ue', $num_ue);
+
+    if ($stmt->execute()) {
         header("Location: ".$_SERVER['PHP_SELF']);
         exit();
     } else {
-        echo "Erreur : " . $sql . "<br>" . $connexion->error;
+        echo "Erreur : " . $sql . "<br>" . $stmt->errorInfo()[2];
     }
 
-    $connexion->close();
+    $connexion = null;
 }
 ?>
 
@@ -41,7 +40,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="../css/style_admin_gestion.css">
-    <title>Gestion des UE</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer"/>
+    <title>Gestion des ressources</title>
     <style>
 .form-container {
     display: <?php echo ($_SERVER["REQUEST_METHOD"] != "POST") ? 'none' : 'block'; ?>;
@@ -68,7 +68,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <input type="number" name="Numero_Res" required min="0" max="1000"><br>
 
         <label for="Nom_Res">Nom de la ressource : </label>
-        <input type="text" name="Nom_UE" required><br>
+        <input type="text" name="Nom_Res" required><br>
 
         <label for="Coefficient_Res">Coefficient de la ressource : </label>
         <input type="number" name="Coefficient_Res" min="0" max="99" required><br>
@@ -85,34 +85,32 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <br>
 <h2>Liste des ressources</h2>
 <?php
-$serveur = "localhost";
-$utilisateur = "root";
-$motDePasse = ""; 
-$baseDeDonnees = "mayynote";
-
-$connexion = new mysqli($serveur, $utilisateur, $motDePasse, $baseDeDonnees);
-
-if ($connexion->connect_error) {
-    die("La connexion a échoué : " . $connexion->connect_error);
-}
+include '../include/connexionBD.php';
 
 $resultat = $connexion->query("SELECT * FROM ressources");
 
-if ($resultat->num_rows > 0) {
+if ($resultat->rowCount() > 0) {
     echo "<table border='1'>
                 <tr>
                     <th>Numero_Res</th>
                     <th>Nom_Res</th>
                     <th>Coefficient_Res</th>
                     <th>Numero_UE</th>
+                    <th>Action</th>
                 </tr>";
 
-    while ($row = $resultat->fetch_assoc()) {
+    foreach ($resultat as $row) {
         echo "<tr>
                     <td>" . $row["Numero_Res"] . "</td>
                     <td>" . $row["Nom_Res"] . "</td>
                     <td>" . $row["Coefficient_Res"] . "</td>
                     <td>" . $row["Numero_UE"] . "</td>
+                    <td>
+                        <div class='button-container'>
+                            <a href='../script/modifier_ressource.php?id=" . $row["Numero_Res"] . "' class='edit-button'><i class='fas fa-edit'></i> Modifier</a> <br>
+                            <a href='../script/supprimer_ressource.php?id=" . $row["Numero_Res"] . "' class='delete-button' onclick=\"return confirm('Êtes-vous sûr de vouloir supprimer cette ressource?');\"><i class='fas fa-trash fa-border fa-lg'></i>Effacer</a>
+                        </div>
+                    </td>
                 </tr>";
     }
     echo "</table>";
@@ -120,36 +118,14 @@ if ($resultat->num_rows > 0) {
     echo "<script>alert('Aucune Ressource trouvée');</script>";
 }
 
-$connexion->close();
+$connexion = null;
 ?>
-
-<button id="ajouter-button" onclick="EffacerRes()">Effacer une ressource</button>
 
 <script>
     function AjouterRes() {
         var formContainer = document.querySelector('.form-container');
         formContainer.style.display = (formContainer.style.display === 'none' || formContainer.style.display === '') ? 'block' : 'none';
-    }
-
-    function EffacerRes() {
-    var numeroRes = prompt("Entrez le numéro de la ressource à supprimer :");
-    if (numeroRes !== null && numeroRes !== "") {
-        if (confirm("Êtes-vous sûr de vouloir supprimer la ressource avec le numéro " + numeroRes + " ?")) {
-            // Envoyer une requête AJAX pour supprimer l'étudiant
-            var xhr = new XMLHttpRequest();
-            xhr.open("POST", "../script/supprimer_ressource.php", true);
-            xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-            xhr.onreadystatechange = function() {
-                if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
-                    // Actualiser la page après la suppression
-                    location.reload();
-                }
-            };
-            xhr.send("numero_res=" + numeroRes);
-        }
-    }
 }
-
 
 </script>
 

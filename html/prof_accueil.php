@@ -1,7 +1,6 @@
 <?php 
     session_start();
         if (!isset($_SESSION['Identifiant_Ens']) || empty($_SESSION['Identifiant_Ens'])) {
-            // Redirection vers la page de connexion
             header("Location: login.php");
             exit();
 } 

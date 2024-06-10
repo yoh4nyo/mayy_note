@@ -8,7 +8,6 @@
 <?php 
         session_start();
         if (!isset($_SESSION['Identifiant_admin']) || empty($_SESSION['Identifiant_admin'])) {
-            // Redirection vers la page de connexion
             header("Location: login.php");
             exit();
         } 
