@@ -1,3 +1,1 @@
-Lien TRELLO :
-
-PAS OPEN SOURCE, CA SERT A RIEN
+mayy note
