@@ -1,3 +1,11 @@
-Lien TRELLO :
+Adminstrateur : 
+  - ID : cherifa.boucetta
+  - MDP : admin
 
-PAS OPEN SOURCE, CA SERT A RIEN
+Enseignant : 
+  - ID : cherifa.boucetta
+  - MDP : enseignant
+
+Étudiant : 
+  - ID : yannis.camelin
+  - MDP : azerty
