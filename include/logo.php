@@ -8,7 +8,7 @@
 </head>
 <body>
     <header class="header">
-        <img src="../img/logo.png" alt="logo" width="120px">
+        <img src="../img/logo.png" alt="logo" width="150px">
     </header>
 </body>
 </html>

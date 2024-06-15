@@ -30,3 +30,11 @@ a {
     justify-content: center;
     align-items: center;
 }
+
+h3 {
+    font-size: 40px;
+    color: #ffffff;
+    font-weight: 600;
+    text-align: center;
+    font-family: "Epilogue", sans-serif;
+}

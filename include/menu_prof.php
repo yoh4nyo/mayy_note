@@ -11,20 +11,22 @@
 
     <div class="off-screen-menu">
       <ul>
-        <li><i class="fa-solid fa-check fa-border fa-lg"></i><a href="../html/prof_saisir.php">Gestion des notes</a></li> <br>
-        <li><i class="fa-solid fa-list fa-border fa-lg"></i><a href="../html/prof_consultation.php">Consulter</a></li> <br>
-        <li class="disconnect"><i class="fa-solid fa-power-off fa-border fa-lg"></i><a href="../include/logout.php">Déconnexion</a></li>
+        <li><span style="color:black;"><i class="fa-solid fa-check fa-border fa-lg"></i><a href="../html/prof_saisir.php">Gestion des notes</a></li> <br>
+        <li><span style="color:black;"><i class="fa-solid fa-list fa-border fa-lg"></i><a href="../html/prof_consultation.php">Consulter</a></li> <br>
+        <li class="disconnect"><span style="color:black;"><i class="fa-solid fa-power-off fa-border fa-lg"></i><a href="../include/logout.php">Déconnexion</a></li>
       </ul>
     </div>
 
     <nav>
-      <div class="ham-menu">
-        <span></span>
-        <span></span>
-        <span></span>
-      </div>
-    </nav>
-
+  <div class="ham-menu">
+    <span></span>
+    <span></span>
+    <span></span>
+    <a href="../html/prof_accueil.php">
+    <i class="fas fa-home"></i>
+  </a>
+  </div>
+</nav>
     <script src="../script/menu.js"></script>
   </body>
 </html>

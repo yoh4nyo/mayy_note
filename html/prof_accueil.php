@@ -1,10 +1,18 @@
 <?php 
     session_start();
+    include '../include/connexionBD.php';
         if (!isset($_SESSION['Identifiant_Ens']) || empty($_SESSION['Identifiant_Ens'])) {
-            // Redirection vers la page de connexion
             header("Location: login.php");
             exit();
 } 
+
+$identifiant_ens = $_SESSION['Identifiant_Ens'];
+$stmt = $connexion->prepare('SELECT Prenom_Ens, Nom_Ens FROM enseignants WHERE Identifiant_Ens = ?');
+$stmt->execute([$identifiant_ens]);
+$ens_info = $stmt->fetch(PDO::FETCH_ASSOC);
+
+$nom_ens = $ens_info['Nom_Ens'];
+$prenom_ens = $ens_info['Prenom_Ens'];
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -20,6 +28,7 @@
 </header>
 
     <h1>BIENVENUE</h1>
+    <h3>Bonjour : <?php echo $nom_ens ." ". $prenom_ens; ?></h3>
     
    <table align="center">
     <tr>

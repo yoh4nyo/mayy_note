@@ -5,32 +5,30 @@ if (!isset($_SESSION['Identifiant_admin']) || empty($_SESSION['Identifiant_admin
     header("Location: login.php");
     exit();
 } 
+
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $numero = $_POST['Numero_UE'];
     $nom = $_POST['Nom_UE'];
     $coefficient = $_POST['Coefficient_UE'];
 
-    $serveur = "localhost";
-    $utilisateur = "root";
-    $motDePasse = ""; 
-    $baseDeDonnees = "mayynote";
-    $connexion = new mysqli($serveur, $utilisateur, $motDePasse, $baseDeDonnees);
-
-    if ($connexion->connect_error) {
-        die("La connexion a échoué : " . $connexion->connect_error);
-    }
+    include '../include/connexionBD.php'; 
 
     $sql = "INSERT INTO ue (Numero_UE, Nom_UE, Coefficient_UE) 
-    VALUES ('$numero', '$nom', '$coefficient')";
+    VALUES (:numero, :nom, :coefficient)";
 
-    if ($connexion->query($sql) === TRUE) {
+    $stmt = $connexion->prepare($sql);
+    $stmt->bindParam(':numero', $numero);
+    $stmt->bindParam(':nom', $nom);
+    $stmt->bindParam(':coefficient', $coefficient);
+
+    if ($stmt->execute()) {
         header("Location: ".$_SERVER['PHP_SELF']);
         exit();
     } else {
-        echo "Erreur : " . $sql . "<br>" . $connexion->error;
+        echo "Erreur : " . $sql . "<br>" . $stmt->errorInfo()[2];
     }
 
-    $connexion->close();
+    $connexion = null;
 }
 ?>
 
@@ -39,6 +37,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer"/>
     <link rel="stylesheet" href="../css/style_admin_gestion.css">
     <title>Gestion des UE</title>
     <style>
@@ -59,7 +58,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <?php include '../include/menu_admin.php'?>
 <br>
 <h1>Gestion des UE</h1>
-<button id="ajouter-button" onclick="AjouterEtu()">Ajouter une UE</button>
+<button id="ajouter-button" onclick="AjouterUe()">Ajouter une UE</button>
 
 <div class="form-container">
     <form action="admin_gestionue.php" method="POST">
@@ -81,32 +80,30 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <br>
 <h2>Liste des UE</h2>
 <?php
-$serveur = "localhost";
-$utilisateur = "root";
-$motDePasse = ""; 
-$baseDeDonnees = "mayynote";
-
-$connexion = new mysqli($serveur, $utilisateur, $motDePasse, $baseDeDonnees);
-
-if ($connexion->connect_error) {
-    die("La connexion a échoué : " . $connexion->connect_error);
-}
+include '../include/connexionBD.php';
 
 $resultat = $connexion->query("SELECT * FROM ue");
 
-if ($resultat->num_rows > 0) {
+if ($resultat->rowCount() > 0) {
     echo "<table border='1'>
                 <tr>
                     <th>Numero_UE</th>
                     <th>Nom_UE</th>
                     <th>Coefficient_UE</th>
+                    <th>Action</th>
                 </tr>";
 
-    while ($row = $resultat->fetch_assoc()) {
+    foreach ($resultat as $row) {
         echo "<tr>
                     <td>" . $row["Numero_UE"] . "</td>
                     <td>" . $row["Nom_UE"] . "</td>
                     <td>" . $row["Coefficient_UE"] . "</td>
+                    <td>
+                        <div class='button-container'>
+                            <a href='../script/modifier_ue.php?id=" . $row["Numero_UE"] . "' class='edit-button'><i class='fas fa-edit'></i> Modifier</a> <br>
+                            <a href='../script/supprimer_ue.php?id=" . $row["Numero_UE"] . "' class='delete-button' onclick=\"return confirm('Êtes-vous sûr de vouloir supprimer cette ue?');\"><i class='fas fa-trash fa-border fa-lg'></i>Effacer</a>
+                        </div>
+                    </td>
                 </tr>";
     }
     echo "</table>";
@@ -114,34 +111,13 @@ if ($resultat->num_rows > 0) {
     echo "<script>alert('Aucune UE trouvée');</script>";
 }
 
-$connexion->close();
+$connexion = null;
 ?>
 
-<button id="ajouter-button" onclick="EffacerUE()">Effacer une UE</button>
-
 <script>
-    function AjouterEtu() {
+    function AjouterUe() {
         var formContainer = document.querySelector('.form-container');
         formContainer.style.display = (formContainer.style.display === 'none' || formContainer.style.display === '') ? 'block' : 'none';
-    }
-
-    function EffacerUE() {
-    var numeroUE = prompt("Entrez le numéro de l'UE à supprimer :");
-    if (numeroUE !== null && numeroUE !== "") {
-        if (confirm("Êtes-vous sûr de vouloir supprimer l'UE avec le numéro " + numeroUE + " ?")) {
-            // Envoyer une requête AJAX pour supprimer l'étudiant
-            var xhr = new XMLHttpRequest();
-            xhr.open("POST", "../script/supprimer_ue.php", true);
-            xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-            xhr.onreadystatechange = function() {
-                if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
-                    // Actualiser la page après la suppression
-                    location.reload();
-                }
-            };
-            xhr.send("numero_ue=" + numeroUE);
-        }
-    }
 }
 
 

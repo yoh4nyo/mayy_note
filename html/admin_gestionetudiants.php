@@ -1,10 +1,10 @@
 <?php
-
 session_start();
 if (!isset($_SESSION['Identifiant_admin']) || empty($_SESSION['Identifiant_admin'])) {
     header("Location: login.php");
     exit();
 } 
+
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $numero = $_POST['Numero_Etu'];
     $prenom = $_POST['Prenom_Etu'];
@@ -15,27 +15,29 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $annee = $_POST['Annee'];
     $groupe = $_POST['Numero_Grp'];
 
-    $serveur = "localhost";
-    $utilisateur = "root";
-    $motDePasse = ""; 
-    $baseDeDonnees = "mayynote";
-    $connexion = new mysqli($serveur, $utilisateur, $motDePasse, $baseDeDonnees);
+    include '../include/connexionBD.php'; 
 
-    if ($connexion->connect_error) {
-        die("La connexion a échoué : " . $connexion->connect_error);
-    }
+    $sql = "INSERT INTO etudiants (Numero_Etu, Prenom_Etu, Nom_Etu, Identifiant_Etu, Mdp_Etu, Cursus, Annee, Numero_Grp) 
+    VALUES (:numero, :prenom, :nom, :identifiant, :mdp, :cursus, :annee, :groupe)";
 
-    $sql = "INSERT INTO etudiants (Numero_Etu, Prénom_Etu, Nom_Etu, Identifiant_Etu, Mdp_Etu, Cursus, Annee, Numero_Grp) 
-    VALUES ('$numero', '$prenom', '$nom', '$identifiant', '$mdp', '$cursus', '$annee', '$groupe')";
+    $stmt = $connexion->prepare($sql);
+    $stmt->bindParam(':numero', $numero);
+    $stmt->bindParam(':prenom', $prenom);
+    $stmt->bindParam(':nom', $nom);
+    $stmt->bindParam(':identifiant', $identifiant);
+    $stmt->bindParam(':mdp', $mdp);
+    $stmt->bindParam(':cursus', $cursus);
+    $stmt->bindParam(':annee', $annee);
+    $stmt->bindParam(':groupe', $groupe);
 
-    if ($connexion->query($sql) === TRUE) {
+    if ($stmt->execute()) {
         header("Location: ".$_SERVER['PHP_SELF']);
         exit();
     } else {
-        echo "Erreur : " . $sql . "<br>" . $connexion->error;
+        echo "Erreur : " . $sql . "<br>" . $stmt->errorInfo()[2];
     }
 
-    $connexion->close();
+    $connexion = null;
 }
 ?>
 
@@ -45,16 +47,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="../css/style_admin_gestion.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer"/>
     <title>Gestion Étudiant</title>
     <style>
-.form-container {
-    display: <?php echo ($_SERVER["REQUEST_METHOD"] != "POST") ? 'none' : 'block'; ?>;
-    width: 50%;
-    margin: 20px auto; 
-    padding: 20px;
-    border-radius: 8px;
-    text-align: center; 
-}
+        .form-container {
+            display: <?php echo ($_SERVER["REQUEST_METHOD"] != "POST") ? 'none' : 'block'; ?>;
+            width: 50%;
+            margin: 20px auto; 
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center; 
+        }
     </style>
 </head>
 <body>
@@ -96,24 +99,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     </form>
 </div>
 
-
 <br>
 <h2>Liste des étudiants</h2>
 <?php
-$serveur = "localhost";
-$utilisateur = "root";
-$motDePasse = ""; 
-$baseDeDonnees = "mayynote";
-
-$connexion = new mysqli($serveur, $utilisateur, $motDePasse, $baseDeDonnees);
-
-if ($connexion->connect_error) {
-    die("La connexion a échoué : " . $connexion->connect_error);
-}
+include '../include/connexionBD.php';
 
 $resultat = $connexion->query("SELECT * FROM etudiants");
 
-if ($resultat->num_rows > 0) {
+if ($resultat->rowCount() > 0) {
     echo "<table border='1'>
                 <tr>
                     <th>Numero_Etu</th>
@@ -124,18 +117,25 @@ if ($resultat->num_rows > 0) {
                     <th>Cursus</th>
                     <th>Annee</th>
                     <th>Numero_Grp</th>
+                    <th>Action</th>
                 </tr>";
 
-    while ($row = $resultat->fetch_assoc()) {
+    foreach ($resultat as $row) {
         echo "<tr>
                     <td>" . $row["Numero_Etu"] . "</td>
-                    <td>" . $row["Prénom_Etu"] . "</td>
+                    <td>" . $row["Prenom_Etu"] . "</td>
                     <td>" . $row["Nom_Etu"] . "</td>
                     <td>" . $row["Identifiant_Etu"] . "</td>
                     <td>" . $row["Mdp_Etu"] . "</td>
                     <td>" . $row["Cursus"] . "</td>
                     <td>" . $row["Annee"] . "</td>
                     <td>" . $row["Numero_Grp"] . "</td>
+                    <td>
+                        <div class='button-container'>
+                            <a href='../script/modifier_etudiant.php?id=" . $row["Numero_Etu"] . "' class='edit-button'><i class='fas fa-edit'></i> Modifier</a> <br>
+                            <a href='../script/supprimer_etudiant.php?id=" . $row["Numero_Etu"] . "' class='delete-button' onclick=\"return confirm('Êtes-vous sûr de vouloir supprimer cet étudiant?');\"><i class='fas fa-trash fa-border fa-lg'></i>Effacer</a>
+                        </div>
+                    </td>
                 </tr>";
     }
     echo "</table>";
@@ -143,37 +143,14 @@ if ($resultat->num_rows > 0) {
     echo "<script>alert('Aucun étudiant trouvé');</script>";
 }
 
-$connexion->close();
+$connexion = null;
 ?>
-
-<button id="ajouter-button" onclick="EffacerEtu()">Effacer un étudiant</button>
 
 <script>
     function AjouterEtu() {
         var formContainer = document.querySelector('.form-container');
         formContainer.style.display = (formContainer.style.display === 'none' || formContainer.style.display === '') ? 'block' : 'none';
-    }
-
-    function EffacerEtu() {
-    var numeroEtu = prompt("Entrez le numéro de l'étudiant à supprimer :");
-    if (numeroEtu !== null && numeroEtu !== "") {
-        if (confirm("Êtes-vous sûr de vouloir supprimer l'étudiant avec le numéro " + numeroEtu + " ?")) {
-            // Envoyer une requête AJAX pour supprimer l'étudiant
-            var xhr = new XMLHttpRequest();
-            xhr.open("POST", "../script/supprimer_etudiant.php", true);
-            xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-            xhr.onreadystatechange = function() {
-                if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
-                    // Actualiser la page après la suppression
-                    location.reload();
-                }
-            };
-            xhr.send("numero_etu=" + numeroEtu);
-        }
-    }
 }
-
-
 </script>
 
 <?php include '../include/footer.php'?>

@@ -1,31 +1,30 @@
 <?php
-session_start();
-if (!isset($_SESSION['Identifiant_admin']) || empty($_SESSION['Identifiant_admin'])) {
-    header("Location: login.php");
-    exit();
-}
+include '../include/connexionBD.php';
 
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $numeroUE = $_POST['numero_ue'];
+if (isset($_GET['id'])) {
+    $id = intval($_GET['id']);
 
-    $serveur = "localhost";
-    $utilisateur = "root";
-    $motDePasse = "";
-    $baseDeDonnees = "mayynote";
-    $connexion = new mysqli($serveur, $utilisateur, $motDePasse, $baseDeDonnees);
+    try {
+        $stmt = $connexion->prepare('DELETE FROM ue WHERE Numero_UE = ?');
+        $stmt->execute([$id]);
 
-    if ($connexion->connect_error) {
-        die("La connexion a échoué : " . $connexion->connect_error);
+        if ($stmt->rowCount() > 0) {
+            header('Location: ../html/admin_gestionue.php');
+            exit();
+        } else {
+            throw new Exception("L'UE avec l'ID $id n'existe pas.");
+        }
+    } catch (PDOException $e) {
+        if ($e->getCode() == '23000') {
+            echo "<script>alert('Impossible de supprimer cette UE : elle est utilisée dans une autre table.');
+                  window.location.href = '../html/admin_gestionue.php';</script>";
+        } else {
+            echo "Erreur PDO : " . $e->getMessage();
+        }
+    } catch (Exception $e) {
+        echo "Erreur : " . $e->getMessage();
     }
-
-    $sql = "DELETE FROM ue WHERE Numero_UE = '$numeroUE'";
-
-    if ($connexion->query($sql) === TRUE) {
-        echo "L'UE a été supprimé avec succès.";
-    } else {
-        echo "Erreur : " . $sql . "<br>" . $connexion->error;
-    }
-
-    $connexion->close();
+} else {
+    echo "ID de l'UE non spécifié.";
 }
 ?>
