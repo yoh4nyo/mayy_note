@@ -1,4 +1,6 @@
-# Comment tester le site ? : 
+# PROJET SAE 203
+
+## Comment tester le site ? : 
   - télécharger le zip
   - importer la base de données sur PHPMYADMIN
   - lancer le site avec xaamp
